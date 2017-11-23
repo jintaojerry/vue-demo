@@ -13,9 +13,10 @@
             return {
                items:[
                    {path:'home',class:'icon-shouye',name:'首页',active:true},
-                   {path:'message',class:'icon-xinxi',name:'信息',active:false},
+                    {path:'publish',class:'icon-fabu',name:'发布',active:false},
+                   {path:'message',class:'icon-weidu',name:'信息',active:false},
                    {path:'my',class:'icon-wode',name:'我的',active:false},
-                   {path:'more',class:'icon-gengduo',name:'更多',active:false},
+                  
                ]
             }
         },
@@ -47,7 +48,7 @@
                 font-size: 14px;
             }
             &.active{
-                color:#007aff;
+                color:#7e57c2;
             }
         }
     }

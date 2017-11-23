@@ -1,4 +1,4 @@
-<template>
+  <template>
     <div class="wrapper">
         <header>
             <div class="iconfont icon-back" @click="goBack"></div>
@@ -30,7 +30,8 @@
             <div class="content-text" v-html="content.content"></div>
 
            <!-- 评论组件 -->
-           <topic-comments :comments="content.replies"></topic-comments>
+           <!-- 父组件做检测函数toUser提供给紫组件访问 -->
+           <topic-comments :comments="content.replies" v-on:toUser="loadUser"></topic-comments>
         </div>
 
        
@@ -63,7 +64,7 @@
             },
             loadUser(user) {
                 this.$router.push({path:'../user',query:{user:user}})
-            }
+            },
        },
        components: {
            TopicComments
@@ -77,7 +78,7 @@
         header{
             width:100%;
             height: 44px;
-            background: #1c6132;
+            background: #7e57c2;
             overflow: hidden;
             position: fixed;
             z-index: 10000;
@@ -88,10 +89,10 @@
                 text-align: center;
                 color: #fff;
                 &.iconfont{
-                    width:10%;
+                    width:12%;
                 }
                 &.title{
-                    width: 80%;
+                    width: 76%;
                     overflow: hidden;
                     white-space: nowrap;
                     text-overflow: ellipsis;
@@ -108,7 +109,7 @@
                 line-height: 1.5;
                 border-bottom: 1px solid #ccc;
                  .put-top{
-                    background: #1c6132;
+                    background: #7e57c2;
                     padding: 2px 8px;
                     border-radius: 3px;
                     color: #fff;

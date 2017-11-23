@@ -3,12 +3,11 @@
         <header>
             <div class="iconfont icon-back" @click="goBack"></div>
             <div class="title">个人中心</div>
-            <div class="iconfont icon-xinxi"></div>
         </header>
         <div class="content">
             <div class="user">
                 <div class="user-img">
-                    <img  :src="userInfo.avatar_url" :alt="userInfo.loginname"/>
+                    <img v-if="userInfo" :src="userInfo.avatar_url" :alt="userInfo.loginname"/>
                 </div>
                 <div class="user-info">
                     <p>{{userInfo.loginname}}</p>
@@ -26,13 +25,14 @@
                         </template>
                         <ul class="cell-container">
                             <li class="cell" v-for="item in recentTopics" :key="item.id" @click="loadTopic(item.id)">
-                                <div class="cell-avatar">
+                                <div class="cell-avatar" @click.stop="loadUser(item.author.loginname)">
                                      <img v-if="item.author"  :src="item.author.avatar_url"/>
                                 </div>
                                 <div class="cell-title">{{item.title}}</div>
                                 <div class="cell-time">{{item.last_reply_at | formatDate}}</div>
                             </li>
                         </ul>
+                        <div class="no-message" v-if="!recentTopics.length">暂无话题</div>
                     </el-collapse-item>
                     <el-collapse-item name="reply">
                         <template slot="title">
@@ -42,13 +42,14 @@
                         </template>
                        <ul class="cell-container">
                             <li class="cell" v-for="item in recentReplies" :key="item.id" @click="loadTopic(item.id)">
-                                <div class="cell-avatar">
+                                <div class="cell-avatar" @click.stop="loadUser(item.author.loginname)">
                                      <img v-if="item.author"  :src="item.author.avatar_url"/>
                                 </div>
                                 <div class="cell-title">{{item.title}}</div>
                                 <div class="cell-time">{{item.last_reply_at | formatDate}}</div>
                             </li>
                         </ul>
+                        <div class="no-message" v-if="!recentReplies.length">暂无回复</div>
                     </el-collapse-item>
                     <el-collapse-item  name="collect">
                          <template slot="title">
@@ -58,13 +59,14 @@
                         </template>
                         <ul class="cell-container">
                             <li class="cell" v-for="item in collectTopics" :key="item.id" @click="loadTopic(item.id)">
-                                <div class="cell-avatar" @click="loadUser(item.author.loginname)">
+                                <div class="cell-avatar" @click.stop="loadUser(item.author.loginname)">
                                      <img v-if="item.author"  :src="item.author.avatar_url"/>
                                 </div>
                                 <div class="cell-title">{{item.title}}</div>
                                 <div class="cell-time">{{item.last_reply_at | formatDate}}</div>
                             </li>
                         </ul>
+                        <div class="no-message" v-if="!collectTopics.length">暂无收藏</div>
                     </el-collapse-item>
                 </el-collapse>
             </div>
@@ -77,7 +79,7 @@
         data() {
             return {
                userInfo:'',
-               activeName: 'topic',
+               activeName: '',
                recentTopics:'',
                recentReplies:'',
                collectTopics:''
@@ -88,15 +90,23 @@
                 url:`https://www.vue-js.com/api/v1/user/${this.$route.query.user}`,
                 method:'get'
             }).then((res) => {
-                console.log(res);
-                this.userInfo = res.data.data;
-                this.recentTopics = res.data.data.recent_topics;
-                this.recentReplies = res.data.data.recent_replies;
-                this.collectTopics = res.data.data.collect_topics;
+               this.fetchData(res)
             }).catch((res) => {
                 console.log(res)
             })
         },
+        beforeRouteUpdate(to, from, next) {//当两个路由渲染同一个组件时，组件不再重新调用
+            this.$http({
+                url: `https://www.vue-js.com/api/v1/user/${to.query.user}`,
+                method: 'get',
+            }).then((res) => {
+                this.fetchData(res)
+            }).catch((res) => {
+                console.log(res);
+            });
+            next();
+        },
+
         methods: {
             goBack() {
                this.$router.go(-1); 
@@ -106,6 +116,12 @@
             },
             loadUser(user) {
                 this.$router.push({path:'../user',query:{user:user}})
+            },
+            fetchData (res) {
+                this.userInfo = res.data.data;
+                this.recentTopics = res.data.data.recent_topics;
+                this.recentReplies = res.data.data.recent_replies;
+                this.collectTopics = res.data.data.collect_topics;
             }
         },
     }
@@ -117,7 +133,7 @@
         header{
             width:100%;
             height: 44px;
-            background: #1c6132;
+            background: #7e57c2;
             overflow: hidden;
             position: fixed;
             z-index: 10000;
@@ -182,9 +198,14 @@
                     float:right;
                     margin-right: 10px;
                 }
+                .no-message{
+                    line-height: 35px;
+                    text-align: center;
+                    background: #eee;
+                    margin-top: 10px;
+                }
                 .cell{
                     padding: 10px 0;
-                    height: 30px;
                     line-height: 30px;
                     border-bottom: 1px solid #ccc;
                     overflow: hidden;

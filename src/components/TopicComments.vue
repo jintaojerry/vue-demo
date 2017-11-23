@@ -4,7 +4,7 @@
         <ul>
             <li v-for="item in comments" :key="item.id">
                 <div class="item">
-                    <div class="author-img">
+                    <div class="author-img" @click="goTofatherUser(item.author.loginname)">
                         <img v-if="item.author" :src="item.author.avatar_url" :alt="item.author.loginname">
                     </div>
                     <div class="author-info">
@@ -35,7 +35,12 @@
             comments:{
                 type:Array
             }
-        }
+        },
+        methods: {
+            goTofatherUser(a) {
+                this.$emit('toUser',a);
+            }
+        },
     }
 </script>
 
@@ -44,7 +49,7 @@
     .comments{
         padding: 10px;
         .comments-sum{
-            border-left: 4px solid #1c6132;
+            border-left: 4px solid #393D49;
             text-indent: 4px;
             line-height: 2;
             border-bottom: 1px solid #ccc;
@@ -78,9 +83,6 @@
                             margin-right: 10px;
                             height: 40px;
                             line-height: 40px;
-                        }
-                        .icon-reply{
-                            margin-top: 5px;
                         }
                     }
                }

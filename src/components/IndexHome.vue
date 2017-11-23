@@ -4,7 +4,7 @@
             <img src="../assets/vue.png" alt="vue"/>
             <span >Vue.js</span>
         </div>
-        <div class="content">
+        <div class="content"  >
             <ul id="titleList">
                 <li v-for = "(titleList,index) in titleLists" 
                     :key = "index" 
@@ -13,7 +13,8 @@
                     {{titleList.name}}
                 </li>
             </ul>
-            <ul id = "list">
+            <ul id = "list" ref="scrollContainer">
+                <div id="top"></div>
                 <li v-for="item in items" :key="item.id">
                     <div class="avatar_url" @click="loadUser(item.author.loginname)">
                         <img v-if="item.author" :src="item.author.avatar_url"/>
@@ -35,7 +36,14 @@
                     </div>
                 </li>
             </ul>
+           
         </div>
+        <div class="loading-container" v-if="isLoad">
+             <mu-circular-progress :size="40" color="#7e57c2" class="loading"/>
+        </div>
+        <a class="goTop" href="#top" v-if="isShow" @click="isShow = false">
+            <i class="iconfont icon-top"></i>
+        </a>
     </div>
 </template>
 
@@ -52,11 +60,19 @@
                     {name:'招聘',active:false,tab:'job'}
                 ],
                 items:'',
-                url:'https://www.vue-js.com/api/v1/topics?tab=all'
+                url:'https://www.vue-js.com/api/v1/topics?tab=all',
+                limit:0,
+                isLoad:false,
+                isShow:false,
             }
         },
         created() {
            this.getData();
+        },
+        mounted() {
+            this.$refs.scrollContainer.addEventListener('scroll',() =>{
+                    this.scroll();
+            })
         },
         methods: {
             tabChange(item) {
@@ -64,18 +80,38 @@
                     item.active = false;
                 });
                 item.active = true
-                // console.log(item)
                 this.url = 'https://www.vue-js.com/api/v1/topics?tab='+item.tab;
+                this.limit = 0;
                 this.getData();
             },
             getData() {
+                this.limit += 10;
                 this.$http({
-                    url:this.url
+                    url:this.url,
+                    params:{
+                         limit:this.limit
+                    }
                 }).then((res) => {
                     this.items = res.data.data;
                 }).catch((res) => {
                     console.log(res)
                 })
+            },
+            scroll () {
+                const sumH = this.$refs.scrollContainer.scrollHeight;
+                const viewH =  this.$refs.scrollContainer.clientHeight;
+                const scrollH = this.$refs.scrollContainer.scrollTop;
+                if (viewH + scrollH === sumH) {
+                    this.isLoad = true;
+                    if (sumH > 800 && !this.isShow) {
+                        this.isShow = true;
+                    }
+                    setTimeout(() => {
+                        this.getData();
+                        this.isLoad = false;
+                    }, 1500);
+                   
+                }
             },
             loadTopic(id) {
                 this.$router.push({path:'../topic',query:{id:id}})
@@ -89,6 +125,8 @@
 </script>
 
 <style scoped lang="scss">
+    @import '../assets/font/iconfont.css';
+    $color:#7e57c2;
     .home{
         background: #e2e2e2;
          .header{
@@ -96,7 +134,7 @@
             top:0px;
             width: 100%;
             height: 44px;
-            background: #1c6132;
+            background: $color;
             line-height: 44px;
             text-align: center;
             img{
@@ -117,29 +155,35 @@
             top:44px;
             bottom:0px;
             width:100%;
-            background: #fff;
-            overflow: auto;
+            background: #eee;
             #titleList{
                 height: 44px;
-                background: #1c6132;
+                background: #fff;
                 display: flex;
+                margin-bottom: 6px;
                 li{
                     flex: 1;
-                    color: #fff;
+                    // color: #fff;
                     font-size: 15px;
                     line-height: 44px;
                     text-align: center;
                     box-sizing: border-box;
                 }
                 .active{
-                   border-bottom: 2px solid #ff5252;
+                   border-bottom: 2px solid  $color;
                 }
             }
             #list{
+                 overflow: auto;
+                 position: absolute;
+                 top: 50px;
+                 bottom: 0;
+                 width: 100%;
                 li{
                     padding: 7px 0;
                     border-bottom: 1px solid #ccc;
                     overflow: hidden;
+                    background: #fff;
                     .avatar_url{
                         width:20%;
                         float: left;
@@ -172,7 +216,7 @@
                            
                         }
                         .put-top{
-                            background: #1c6132;
+                            background:  $color;
                             padding: 2px 8px;
                             border-radius: 3px;
                             color: #fff;
@@ -189,6 +233,39 @@
                         }
                     }
                 }
+            }
+           
+           
+        }
+        .loading-container{
+            position: absolute;
+            left: 0px;
+            bottom: 0px;
+            width: 100%;
+            height: 40px;
+            background: #fff;
+            z-index: 100;
+            .loading{
+                display: block;
+                width: 40px;
+                height: 40px;
+                margin: 0 auto;
+            }
+        }
+        .goTop{
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            color:  $color;
+            text-align: center;
+            line-height: 60px;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: #aaa;
+            z-index: 999;
+            .icon-top{
+                font-size: 28px;
             }
         }
     }

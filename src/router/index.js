@@ -4,12 +4,13 @@ import Index from '@/pages/index'
 import Login from '@/pages/login'
 import Topic from '@/pages/topic'
 import User from '@/pages/user'
+import NotFound from '@/pages/notFound'
 
 
 import IndexHome from '@/components/IndexHome'
 import IndexMessage from '@/components/IndexMessage'
 import IndexMy from '@/components/IndexMy'
-import IndexMore from '@/components/IndexMore'
+import IndexPublish from '@/components/IndexPublish'
 
 Vue.use(Router)
 
@@ -43,8 +44,8 @@ export default new Router({
           component:IndexMy
         },
         {
-          path:'more',
-          component:IndexMore
+          path:'publish',
+          component:IndexPublish
         },
       ]
     },
@@ -60,7 +61,10 @@ export default new Router({
     {
       path:'/user',
       component:User
-    }
-   
+    },
+   {
+     path:'/not',
+     component:NotFound
+   }
   ]
 })
