@@ -58,7 +58,6 @@ export default {
            
             
         }).catch(error => {
-            console.log(555)
            if(!this.accessToken){
                this.error = 'accesstoken不能为空'
            }

@@ -1,7 +1,7 @@
 <template>
     <div class="home">
         <div class="header">
-            <img src="../assets/vue.png" alt="vue"/>
+            <img src="https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/80/h/80" />
             <span >Vue.js</span>
         </div>
         <div class="content"  >
@@ -143,6 +143,7 @@
                 height: 36px;
                 margin-left: 15px;
                 margin-top: 4px;
+                border-radius: 50%;
             }
             span{
                 color: #fff;
